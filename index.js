@@ -1,17 +1,24 @@
 #!/usr/bin/env node
-"use strict";
-const meow = require("meow");
-const Promise = require("pinkie-promise");
-const Xray = require("x-ray"), xray = Xray();
+'use strict';
+const Promise = require('pinkie-promise');
+const Xray = require('x-ray'), xray = Xray();
+const cli = require('./cli');
 
-const periods = ['day', 'week', 'month'];
+const getUsrPkgs = function(username) {
+  return new Promise(function(resolve, reject) {
+    var url = 'https://www.npmjs.com/~' + username + '/';
+    xray(url, '.collaborated-packages', ['li'], 'a')(function(err, pkgs) {
+      if (err) reject(err);
+      // resolve(data);
+      var usrPkgs = [];
+      pkgs.forEach(function(pkg) {
+        usrPkgs.push(pkg.trim().split('- ')[0].trim());
+      });
+      resolve(usrPkgs);
+    });
+  });
+}
 
-const cli = meow(`
-  Usage
-    $ pkgstats -u <user> -n <package name> -p <day|week|month>
-
-  Options
-    -u, --user      npm user
-    -n, --name      pkg name
-    -p, --period    time period
-`);
+getUsrPkgs(cli.flags['u']).then(function(pkgs) {
+  return pkgs;
+});
