@@ -1,5 +1,5 @@
 # pkg-stats
-A command line tool for getting download stats for npm packages.
+A command line tool for getting download stats for npm packages. Available on [npm](https://www.npmjs.com/package/pkg-stats).
 
 ![Screenshot](http://i.imgur.com/hPTia8j.png)
 
