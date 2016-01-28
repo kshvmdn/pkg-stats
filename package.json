@@ -35,6 +35,9 @@
   },
   "homepage": "https://github.com/kshvmdn/pkg-stats#readme",
   "dependencies": {
+    "colors": "^1.1.2",
+    "got": "^6.1.1",
+    "lodash": "^4.0.1",
     "meow": "^3.7.0",
     "pinkie-promise": "^2.0.0",
     "x-ray": "^2.0.3"
