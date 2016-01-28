@@ -17,16 +17,18 @@ const cli = meow(`
     $ pkgstats -p latestvid -p week
 `);
 
-if ( cli.flags['u'] != undefined && cli.flags['p'] != undefined ) {
+if ( cli.flags.u != undefined && cli.flags.p != undefined ) {
   console.log('Expected only one of user/package.')
   process.exit(1);
-} else if ( cli.flags['u'] == undefined && cli.flags['p'] == undefined ) {
+} else if ( cli.flags.u == undefined && cli.flags.p == undefined ) {
   console.log('Expected either user or package name.'); 
   process.exit(1);
-} else if (cli.flags['t'] == undefined ) {
+} else if ( cli.flags.u == '' || cli.flags.p == '' ) {
+  console.log('Invalid user/package argument; cannot be empty.')
+} else if (cli.flags.t == undefined ) {
   console.log('Expected a time period.');
   process.exit(1);
-} else if ( periods.indexOf(cli.flags['t']) == -1 ) {
+} else if ( periods.indexOf(cli.flags.t) == -1 ) {
   console.log('Invalid period; must be one of <day|week|month>.')
   process.exit(1);
 }
