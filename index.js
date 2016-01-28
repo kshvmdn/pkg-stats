@@ -9,11 +9,8 @@ const _ = require('lodash');
 
 var getUsrPkgs = function(username) {
   return new Promise(function(resolve, reject) {
-
-    if (username == '') {
+    if (username == '')
       resolve([cli.p]);
-    }
-
     var url = 'https://www.npmjs.com/~' + username + '/';
     xray(url, '.collaborated-packages', ['li'], 'a')(function(err, pkgs) {
       if (err) reject(err);
@@ -23,13 +20,11 @@ var getUsrPkgs = function(username) {
       });
       resolve(usrPkgs);
     });
-
   });
 }
 
 var getPkgStats = function(pkgs) {
   return new Promise(function(resolve, reject) {
-
     var base = 'https://api.npmjs.org/downloads/point/';
     var period = 'last-' + cli.t + '/';
     var packages = pkgs.length > 1 ? pkgs.join() : String(pkgs);
@@ -40,7 +35,6 @@ var getPkgStats = function(pkgs) {
       .catch(error => {
         reject(error);
       });
-
   });
 }
 
@@ -48,14 +42,14 @@ var parseJson = function(pkgs) {
   return new Promise(function(resolve, reject) {
     var output = '';
     if (cli.p == undefined) {
-      output += colors.white( 'Package download stats for user ' + (cli.u).magenta + ' in the last ' + (cli.t).magenta + ':\n\n' );
+      output += 'Download stats for the last ' + (cli.t).yellow + ', for ' + (cli.u).yellow + ':\n';
       _.forOwn(pkgs, function(pkg, key) {
-        output += colors.white(' - ' + (pkg.package).cyan + ' downloaded ' + String(pkg.downloads).cyan + ' times\n');
+        output += '  - ' + (pkg.package).green + ', ' + String(pkg.downloads).cyan + ' downloads\n';
       });
     } else {
-      output = colors.white('Package ' + (pkgs.package).cyan + ' was downloaded ' + String(pkgs.downloads).cyan + ' times in the last ' + (cli.t).cyan + '.');
+      output = 'Package ' + (pkgs.package).green + ' was downloaded ' + String(pkgs.downloads).cyan + ' times in the last ' + (cli.t).yellow + '.';
     }
-    resolve(output.trim());
+    resolve(colors.white(output.trim()));
   });
 }
 
