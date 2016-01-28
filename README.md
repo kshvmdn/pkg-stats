@@ -5,15 +5,15 @@ A command line tool for getting download stats for npm packages.
 
 #### Install
 
-```bash
+```
 npm i pkg-stats -g
 ```
 
 #### Usage
 
-`pkgstats` requires __either__ a username or package name (only one!) and a period (day/week/month). See below for usage, options, and examples (or run `pkgstats --help` to access it in your console)
+`pkgstats` requires __either__ a username or package name (only one!) and a period (day/week/month). See below for usage, options, and examples (or run `pkgstats --help` to access it in your console).
 
-```bash
+```
 Usage
 $ pkgstats -u <user> -n <package name> -p <day|week|month>
 
