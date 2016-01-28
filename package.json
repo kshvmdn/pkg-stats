@@ -1,0 +1,42 @@
+{
+  "name": "pkg-stats",
+  "version": "0.0.0",
+  "description": "A command line tool for getting download stats for npm packages.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./index.js",
+    "watch": "nodemon ./index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/kshvmdn/pkg-stats.git"
+  },
+  "author": {
+    "name": "kshvmdn",
+    "email": "kshvmdn@gmail.com",
+    "url": "http://kshvmdn.me/"
+  },
+  "bin": {
+    "pkgstats": "index.js"
+  },
+  "engines": {
+    "node": ">=4.0.0"
+  },
+  "keywords": [
+    "npm",
+    "packages",
+    "download",
+    "stats"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kshvmdn/pkg-stats/issues"
+  },
+  "homepage": "https://github.com/kshvmdn/pkg-stats#readme",
+  "dependencies": {
+    "meow": "^3.7.0",
+    "pinkie-promise": "^2.0.0",
+    "x-ray": "^2.0.3"
+  }
+}
