@@ -30,6 +30,8 @@ var getPkgStats = function(pkgs) {
     var packages = pkgs.length > 1 ? pkgs.join() : String(pkgs);
     got(base + period + packages, { json: true })
       .then(response => {
+        if (response.body.error)
+          reject(response.body.error);
         resolve(response.body);
       })
       .catch(error => {
@@ -53,7 +55,7 @@ var parseJson = function(pkgs) {
   });
 }
 
-var user = cli.u != undefined ? cli.u : '';
+var user = cli.u != undefined ? cli.u.trim() : '';
 
 getUsrPkgs(user)
   .then(pkgs => {
