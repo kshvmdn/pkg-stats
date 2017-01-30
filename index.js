@@ -9,8 +9,13 @@ const _ = require('lodash');
 
 var getUsrPkgs = function(username) {
   return new Promise(function(resolve, reject) {
-    if (username == '')
-      resolve([cli.p]);
+    if (username == '') {
+      if (Array.isArray(cli.p)) {
+        resolve(cli.p)
+      } else {
+        resolve(cli.p.split ? cli.p.split(',').map((pkg) => pkg.trim()) : [cli.p]);
+      }
+    }
     var url = 'https://www.npmjs.com/~' + username + '/';
     xray(url, '.collaborated-packages', ['li'], 'a')(function(err, pkgs) {
       if (err) reject(err);
@@ -24,6 +29,12 @@ var getUsrPkgs = function(username) {
 }
 
 var getPkgStats = function(pkgs) {
+  // api doesn't support scoped packages :( so remove them
+  pkgs = pkgs.filter((pkg) => {
+    var isScoped = pkg.substr(0, 1) === '@'
+    if (isScoped) console.warn('No data for ' + pkg + ', scoped packages are not supported :(')
+    return !isScoped
+  })
   return new Promise(function(resolve, reject) {
     var base = 'https://api.npmjs.org/downloads/point/';
     var period = 'last-' + cli.t + '/';
@@ -49,7 +60,14 @@ var parseJson = function(pkgs) {
         output += '  - ' + (pkg.package).green + ', ' + String(pkg.downloads).cyan + ' downloads\n';
       });
     } else {
-      output = 'Package ' + (pkgs.package).green + ' was downloaded ' + String(pkgs.downloads).cyan + ' times in the last ' + (cli.t).yellow + '.';
+      output += 'Download stats for the last ' + (cli.t).yellow + ':\n';
+      if (cli.p.indexOf(',') > -1 || Array.isArray(cli.p)) {
+        _.forOwn(pkgs, function(pkg, key) {
+          output += '  - ' + (pkg.package).green + ', ' + String(pkg.downloads).cyan + ' downloads\n';
+        });
+      } else {
+        output = 'Package ' + (pkgs.package).green + ' was downloaded ' + String(pkgs.downloads).cyan + ' times.';
+      }
     }
     resolve(colors.white(output.trim()));
   });
@@ -69,6 +87,6 @@ getUsrPkgs(user)
     process.exit(0);
   })
   .catch(e => {
-    console.log(e.red);
+    console.log(e);
     process.exit(1);
   });

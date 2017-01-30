@@ -5,16 +5,18 @@ const validate = require('./utils').validate;
 
 const cli = meow(`
   Usage
-    $ pkgstats -u <user> -n <package name> -p <day|week|month>
+    $ pkgstats -u <user> -p <package name(s)> -t <day|week|month>
 
   Options
     -u, --user      npm user
-    -p, --package   package name
+    -p, --package   package name(s)
     -t, --time      time period
 
   Examples
-    $ pkgstats -u kshvmdn -p day
-    $ pkgstats -p latestvid -p week
+  $ pkgstats -u kshvmdn -t day
+  $ pkgstats -p latestvid -t month
+  $ pkgstats -p latestvid -p pkg-stats -t month
+  $ pkgstats -p "latestvid, pkg-stats" -t month
 `);
 
 validate(cli.flags, function(err) {
