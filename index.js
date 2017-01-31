@@ -15,6 +15,7 @@ var getUsrPkgs = function(username) {
       } else {
         resolve(cli.p.split ? cli.p.split(',').map((pkg) => pkg.trim()) : [cli.p]);
       }
+      return
     }
     var url = 'https://www.npmjs.com/~' + username + '/';
     xray(url, '.collaborated-packages', ['li'], 'a')(function(err, pkgs) {
@@ -23,6 +24,7 @@ var getUsrPkgs = function(username) {
       _.each(pkgs, function(pkg) {
         usrPkgs.push(pkg.trim().split('- ')[0].trim());
       });
+      if (usrPkgs.length === 0) return reject('User not found or no packages found for this user')
       resolve(usrPkgs);
     });
   });
