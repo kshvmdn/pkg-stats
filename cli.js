@@ -1,7 +1,7 @@
 'use strict';
 
 const meow = require('meow');
-const validate = require('./utils').validate;
+const validate = require('./validate-flags');
 
 const cli = meow(`
   Usage
@@ -19,7 +19,7 @@ const cli = meow(`
   $ pkgstats -p "latestvid, pkg-stats" -t month
 `);
 
-validate(cli.flags, function(err) {
+validate(cli.flags, err => {
   if (err) {
     console.error(err.message);
     process.exit(1);
