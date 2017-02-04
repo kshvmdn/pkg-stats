@@ -13,10 +13,10 @@ const cli = meow(`
     -t, --time      time period
 
   Examples
-  $ pkgstats -u kshvmdn -t day
-  $ pkgstats -p latestvid -t month
-  $ pkgstats -p latestvid -p pkg-stats -t month
-  $ pkgstats -p "latestvid, pkg-stats" -t month
+    $ pkgstats -u kshvmdn -t day
+    $ pkgstats -p latestvid -t month
+    $ pkgstats -p latestvid -p pkg-stats -t month
+    $ pkgstats -p "latestvid, pkg-stats" -t month
 `);
 
 validate(cli.flags, err => {
