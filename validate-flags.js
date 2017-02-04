@@ -9,7 +9,6 @@ const _isEmpty = s => {
 const validateFlags = (flags, callback) => {
   let validPeriods = ['day', 'week', 'month'];
 
-  // Empty flags object
   if (Object.keys(flags).length == 0)
     return callback(new Error('Expected arguments. Run --help for help.'))
 

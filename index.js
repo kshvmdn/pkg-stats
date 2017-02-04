@@ -4,74 +4,86 @@ const Xray = require('x-ray'), xray = Xray();
 const got = require('got');
 const cli = require('./cli').flags;
 const colors = require('colors');
-const _ = require('lodash');
 
-const getUsrPkgs = username => {
+function getUsrPkgs(username) {
   return new Promise((resolve, reject) => {
     if (username === '') {
-      if (Array.isArray(cli.p)) {
-        resolve(cli.p)
-      } else {
-        resolve(cli.p.split ? cli.p.split(',').map(pkg => pkg.trim()) : [cli.p]);
-      }
-      return
+      if (Array.isArray(cli.p))
+        return resolve(cli.p);
+
+      return resolve(cli.p.split ? cli.p.split(',').map(pkg => pkg.trim()) : [cli.p]);
     }
+
     let url = `https://www.npmjs.com/~${username}`;
     xray(url, '.collaborated-packages', ['li'], 'a')((err, pkgs) => {
-      if (err) return reject(err);
-      let usrPkgs = [];
-      _.each(pkgs, pkg => {
-        usrPkgs.push(pkg.trim().split('- ')[0].trim());
-      });
-      if (usrPkgs.length === 0) return reject('User not found or no packages found for this user')
+      if (err)
+        return reject(err);
+
+      let usrPkgs = pkgs.map(pkg => pkg.trim().split('- ')[0].trim());
+      if (usrPkgs.length === 0)
+        return reject('User not found or no packages found for this user')
+
       resolve(usrPkgs);
     });
   });
 }
 
-const getPkgStats = pkgs => {
+function getPkgStats(pkgs) {
   // api doesn't support scoped packages :( so remove them
   pkgs = pkgs.filter(pkg => {
-    let isScoped = pkg.substr(0, 1) === '@';
-    if (isScoped) console.warn('No data for ' + pkg + ', scoped packages are not supported :(');
-    return !isScoped;
-  })
+    if (pkg.substr(0, 1) === '@') {
+      console.warn('No data for ' + pkg + ', scoped packages are not supported :(');
+      return false;
+    }
+
+    return true;
+  });
+
+  if (pkgs.length === 0) process.exit(1);
+
   return new Promise((resolve, reject) => {
-    let base = 'https://api.npmjs.org/downloads/point/';
-    let period = `last-${cli.t}/`;
+    let base = 'https://api.npmjs.org/downloads/point';
+    let period = `last-${cli.t}`;
     let packages = pkgs.length > 1 ? pkgs.join() : String(pkgs);
-    got(`${base}${period}${packages}`, { json: true })
+
+    got(`${base}/${period}/${packages}`, { json: true })
       .then(response => {
-        if (response.body.error) return reject(response.body.error);
+        if (response.body.error)
+          return reject(response.body.error);
+
         resolve(response.body);
       })
       .catch(error => reject(error));
   });
 }
 
-const parseJson = pkgs => {
+function parseJson(pkgs) {
+  const prepareOutput = () => Object.keys(pkgs)
+                                    .map(k => `  - ${(pkgs[k].package).green}, ${String(pkgs[k].downloads).cyan} downloads`)
+                                    .join('\n');
+
   return new Promise((resolve, reject) => {
     let output = '';
-    if (cli.p == undefined) {
+
+    if (!cli.p) {
       output += `Download stats for the last ${(cli.t).yellow} for ${(cli.u).yellow}:\n`;
-      _.forOwn(pkgs, (pkg, key) => {
-        output += `  - ${(pkg.package).green}, ${String(pkg.downloads).cyan} downloads\n`;
-      });
+      output += prepareOutput();
     } else {
       output += `Download stats for the last ${(cli.t).yellow}:\n`;
-      if (cli.p.indexOf(',') > -1 || Array.isArray(cli.p)) {
-        _.forOwn(pkgs, (pkg, key) => {
-          output += `  - ${(pkg.package).green}, ${String(pkg.downloads).cyan} downloads\n`;
-        });
+
+      // Check if multiple packages were passed AND that they multiple made it to this point
+      if (!pkgs.hasOwnProperty('package') && (cli.p.indexOf(',') > -1 || Array.isArray(cli.p))) {
+        output += prepareOutput();
       } else {
-        output = `Package ${(pkgs.package).green} was download ${String(pkgs.downloads).cyan} times.`;
+        output = `Package ${(pkgs.package).green} was downloaded ${String(pkgs.downloads).cyan} times.`;
       }
     }
+
     resolve(colors.white(output.trim()));
   });
 }
 
-let user = cli.u != undefined ? cli.u.trim() : '';
+let user = cli.u ? cli.u.trim() : '';
 
 getUsrPkgs(user)
   .then(pkgs => getPkgStats(pkgs))
